@@ -1,0 +1,151 @@
+<html>
+<head>
+    <title>Elephant</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div id="root" v-cloak>
+    <div v-cloak class="sidebar-container">
+        <div class="compose-section">
+            <div class="button-compose" @click="showComposeModal = true" >COMPOSE</div>
+        </div>
+        <compose-general v-if="showComposeModal" @close="showReplyModal = false">
+            <div slot="header" class="modal-header-content">Send a message to <input type="text" v-model="sendTo" class="compose-input"></div>
+            <form slot="body" action="/messages" v-on:submit.prevent="sendComposition">
+                <textarea class="compose-textarea" v-model="currentMessageBody" name="message" cols="40" rows="5"></textarea>
+                <button type="submit" class="button-reply">Send</button>
+            </form>
+        </compose-general>
+        <div class="inbox-section">
+            <div class="inbox-words" @click="getInbox">Inbox ({{messages.length}})</div>
+            <div class="inbox-words" @click="getSent">Sent</div>
+        </div>
+        <div v-if="showUserModal">Ayyyy lmfao</div>
+        <div class="user-icon" @click="showUserModal = true"><i class="fa fa-user fa-2x" class="search-icon" aria-hidden="true"></i></div>
+    </div>
+    <div v-cloak class="messages-container">
+        <div class="messages-column-wrapper">
+            <div class="message-column-sorting-section-wrapper">
+                <div class="message-column-sorting-section">
+                    <i class="fa fa-search" class="search-icon" aria-hidden="true"></i>
+                    <input type="text" v-model="keyword" v-on:keyup.enter.prevent="getSearchMessages" class="search-input">
+                </div>
+            </div>
+            <div class="message-previews">
+
+                <div v-if="(currentMessageSet === 'sent' && sent.length === 0)">
+                    <h3>no messagessssssss</h3>
+                </div>
+                <div v-if="currentMessageSet === 'sent' && sent.length > 0" v-for="(sentMessage, index) in sent" v-on:click="clickOnMessage($event)" class="message-preview-wrapper">
+                    <div class="message-preview-status"><i class="fa fa-paper-plane" aria-hidden="true"></i></div>
+                    <div class="message-preview-info-wrapper">
+                        <div class="message-preview-index">{{index}}</div>
+                        <div class="message-preview-sender">To {{sentMessage.fromFirstName + " " + sentMessage.fromLastName}}</div>
+                        <div class="message-preview-date">Sent at {{sentMessage.sentAt}}</div>
+                    </div>
+                    <div v-if="index === currentMessage" class="active-border"></div>
+                </div>
+
+                <div v-if="(currentMessageSet === 'inbox' && messages.length === 0)">
+                    <h3>no messagessssssss</h3>
+                </div>
+                <div v-if="(currentMessageSet === 'inbox' && messages.length > 0)" v-for="(message, index) in messages" v-on:click="clickOnMessage($event)" class="message-preview-wrapper">
+                    <div v-if="message.opened === 0" class="message-preview-status"><i class="fa fa-circle" aria-hidden="true"></i></div>
+                    <div class="message-preview-status" v-else><i class="fa fa-check" aria-hidden="true"></i></div>
+                    <div class="message-preview-info-wrapper">
+                        <div class="message-preview-index">{{index}}</div>
+                        <div class="message-preview-sender">{{message.fromFirstName + " " + message.fromLastName}}</div>
+                        <div class="message-preview-date">Received at {{message.sentAt}}</div>
+                    </div>
+                    <div v-if="index === currentMessage" class="active-border"></div>
+                </div>
+
+                <div v-cloak v-if="(currentMessageSet === 'searchedMessages' && searchedMessages.length === 0)">
+                    <h3>no results</h3>
+                </div>
+                <div v-if="(currentMessageSet === 'searchedMessages' && searchedMessages.length > 0)" v-for="(message, index) in searchedMessages" v-on:click="clickOnMessage($event)" class="message-preview-wrapper">
+                    <div v-if="message.opened === 0" class="message-preview-status"><i class="fa fa-circle" aria-hidden="true"></i></div>
+                    <div class="message-preview-status" v-else><i class="fa fa-check" aria-hidden="true"></i></div>
+                    <div class="message-preview-info-wrapper">
+                        <div class="message-preview-index">{{index}}</div>
+                        <div class="message-preview-sender">{{message.fromFirstName + " " + message.fromLastName}}</div>
+                        <div class="message-preview-date">Received at {{message.sentAt}}</div>
+                    </div>
+                    <div v-if="index === currentMessage" class="active-border"></div>
+                </div>
+
+            </div>
+        </div>
+        <div class="message-wrapper">
+            <div class="message-header">
+                <div v-if="(currentMessageSet === 'inbox' && messages.length > 0)" class="message-header-contents"><span class="highlight">{{messages[currentMessage].fromFirstName}}</span> to <span class="highlight">Me</span></div>
+                <div v-if="(currentMessageSet === 'searchedMessages' && searchedMessages.length > 0)" class="message-header-contents"><span class="highlight">{{searchedMessages[currentMessage].fromFirstName}}</span> to <span class="highlight">Me</span></div>
+                <div v-if="(currentMessageSet === 'sent' && sent.length > 0)" class="message-header-contents"><span class="highlight">Me</span> to <span class="highlight">{{sent[currentMessage].fromFirstName}}</span></div>
+
+            </div>
+            <div v-cloak class="message-body-wrapper">
+                <compose v-if="showReplyModal" @close="showReplyModal = false">
+                    <div slot="header" class="modal-header-content">Reply to {{messages[currentMessage].fromFirstName}}</div>
+                    <form slot="body" action="/messages" v-on:submit.prevent="sendMessageReply">
+                        <textarea class="compose-textarea" v-model="currentMessageBody" name="message" cols="40" rows="5"></textarea>
+                        <button type="submit" class="button-reply">Send</button>
+                    </form>
+                </compose>
+                <div v-if="(currentMessageSet === 'inbox' && messages.length > 0)" class="message-body">{{ messages[currentMessage].body }}</div>
+                <div v-if="(currentMessageSet === 'searchedMessages' && searchedMessages.length > 0)" class="message-body">{{ searchedMessages[currentMessage].body }}</div>
+                <div v-if="(currentMessageSet === 'sent' && sent.length > 0)" class="message-body">{{ sent[currentMessage].body }}</div>
+                <div v-if="(currentMessageSet === 'inbox' && messages.length > 0)" class="button-reply" @click="showReplyModal = true">Reply</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/x-template" id="compose-template">
+    <transition name="modal">
+        <div class="modal-mask">
+            <div class="modal-wrapper">
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <slot name="header">
+                            default header
+                        </slot>
+                    </div>
+                    <div class="modal-body">
+                        <slot name="body">
+                            default body
+                        </slot>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </transition>
+</script>
+
+<script type="text/x-template" id="compose-general-template">
+    <transition name="modal">
+        <div class="modal-mask-compose">
+            <div class="modal-wrapper">
+                <div class="modal-container-compose">
+                    <div class="modal-header">
+                        <slot name="header">
+                            default header
+                        </slot>
+                    </div>
+                    <div class="modal-body">
+                        <slot name="body">
+                            default body
+                        </slot>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </transition>
+</script>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vue@2.1.10/dist/vue.js"></script>
+<script type="text/javascript" src="/js/home.js"></script>
+<script src="https://use.fontawesome.com/2574aa6893.js"></script>
+</body>
+</html>

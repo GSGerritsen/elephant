@@ -31,8 +31,6 @@ public class Signup extends HttpServlet {
         String email = request.getParameter("email");
         String pw = request.getParameter("password");
 
-        // Do some input checking here
-
         String hashedPass = Password.hashPassword(pw);
         User user = new User(firstName, lastName, email, hashedPass);
 

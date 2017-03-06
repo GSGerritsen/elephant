@@ -26,15 +26,9 @@ public class Home extends HttpServlet {
         if (jwt == null) {
             response.sendRedirect("index.jsp");
         }
-        // Need to verify the JWT here (need to find a way to store the key securely)
-        // And then use response.setAttribute('userEmail') etc to set the current user's email
-        // in the Vue component's data.
-        // Then both Compose and Reply will use this part of the data as the "from" field.
-        // The "to" field will use either a message being replied to, or just entering it into the To field from
-        // Compose. This should all be enough to get messages inserted properly into message + message_details.
+
         byte[] key = Files.readAllBytes(Paths.get("/Users/gerritgerritsen/Documents/Java/experiments/keys/hmac.txt"));
         String currentEmail = Jwts.parser().setSigningKey(key).parseClaimsJws(jwt.toString()).getBody().getSubject();
-        System.out.println(currentEmail);
 
         PrintWriter out = response.getWriter();
         out.append(currentEmail);

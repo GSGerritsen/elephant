@@ -10,7 +10,6 @@ import java.util.List;
 
 public class MessageStatements {
 
-    // This is probably very bad in some way
     public void insertMessage(Message message) {
         String sqlMessage = "INSERT INTO message (body, sent_at, time_to_live, sent_by) VALUES (?, ?, ?, ?)";
         String sqlMessageDetails = "INSERT INTO message_details (message_id, sent_to, opened) VALUES (?, ?, ?)";

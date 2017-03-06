@@ -34,7 +34,7 @@
             <div class="message-previews">
 
                 <div v-if="(currentMessageSet === 'sent' && sent.length === 0)">
-                    <h3>no messagessssssss</h3>
+                    <h3>No messages</h3>
                 </div>
                 <div v-if="currentMessageSet === 'sent' && sent.length > 0" v-for="(sentMessage, index) in sent" v-on:click="clickOnMessage($event)" class="message-preview-wrapper">
                     <div class="message-preview-status"><i class="fa fa-paper-plane" aria-hidden="true"></i></div>
@@ -47,7 +47,7 @@
                 </div>
 
                 <div v-if="(currentMessageSet === 'inbox' && messages.length === 0)">
-                    <h3>no messagessssssss</h3>
+                    <h3>No messages</h3>
                 </div>
                 <div v-if="(currentMessageSet === 'inbox' && messages.length > 0)" v-for="(message, index) in messages" v-on:click="clickOnMessage($event)" class="message-preview-wrapper">
                     <div v-if="message.opened === 0" class="message-preview-status"><i class="fa fa-circle" aria-hidden="true"></i></div>
@@ -61,7 +61,7 @@
                 </div>
 
                 <div v-cloak v-if="(currentMessageSet === 'searchedMessages' && searchedMessages.length === 0)">
-                    <h3>no results</h3>
+                    <h3>No results</h3>
                 </div>
                 <div v-if="(currentMessageSet === 'searchedMessages' && searchedMessages.length > 0)" v-for="(message, index) in searchedMessages" v-on:click="clickOnMessage($event)" class="message-preview-wrapper">
                     <div v-if="message.opened === 0" class="message-preview-status"><i class="fa fa-circle" aria-hidden="true"></i></div>

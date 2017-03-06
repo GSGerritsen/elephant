@@ -19,7 +19,6 @@ import Authentication.Password;
 public class Login extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //Key key = MacProvider.generateKey();
         byte[] key = Files.readAllBytes(Paths.get("/Users/gerritgerritsen/Documents/Java/experiments/keys/hmac.txt"));
 
         String email = request.getParameter("email");
@@ -42,7 +41,7 @@ public class Login extends HttpServlet {
             response.sendRedirect("/vueHome");
         }
         else {
-            System.out.println("Invalid user credentials, please see therapist");
+            System.out.println("Invalid user credentials");
             response.sendRedirect("login.jsp");
         }
     }

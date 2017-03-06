@@ -21,7 +21,6 @@ import Inbox.Inbox;
 @WebServlet(name = "Messages")
 public class Messages extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //String email = request.getParameter("email");
         try {
             StringBuilder sb = new StringBuilder();
             String s;
@@ -42,8 +41,6 @@ public class Messages extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 1st regex: requester=(.+[&]) (chop off the last character)
-        // 2nd regex: wants=(\w+)
         List<Inbox> inboxList = new ArrayList<Inbox>();
         String req = request.getQueryString();
         String requester;

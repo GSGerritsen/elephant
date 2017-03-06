@@ -111,14 +111,12 @@ new Vue({
         },
 
         clickOnMessage: function(event) {
-            // This feels kind of hacky but not sure about a better way to do it currently
             var self = this;
             var message = event.currentTarget;
             var re = /index">(\d+)/;
             var reMatch = message.innerHTML.match(re);
             var index = reMatch[1];
             this.currentMessage = parseInt(index);
-            // Here we'll do something like axios.post(markAsRead) {}
             if (this.currentMessageSet === 'inbox') {
                 this.messages[index].opened = true;
                 axios.post('/update_message', {

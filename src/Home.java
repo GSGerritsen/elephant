@@ -15,9 +15,7 @@ import java.nio.file.Paths;
 
 @WebServlet(name = "Home")
 public class Home extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // check if authenticated
-    }
+
 
     // Write a Filter
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
